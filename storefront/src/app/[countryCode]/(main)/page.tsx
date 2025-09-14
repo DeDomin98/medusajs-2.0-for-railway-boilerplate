@@ -1,14 +1,20 @@
+import { Product } from "@medusajs/medusa"
 import { Metadata } from "next"
-
-import FeaturedProducts from "@modules/home/components/featured-products"
+import { logAllData } from "@lib/utils/logger"
 import Hero from "@modules/home/components/hero"
-import { getCollectionsWithProducts } from "@lib/data/collections"
-import { getRegion } from "@lib/data/regions"
+import FeaturedProducts from "@modules/home/components/featured-products"
+import Collections from "@modules/home/components/collections"
+import StoneGuide from "@modules/home/components/stone-guide"
+import Testimonials from "@modules/home/components/testimonials"
+import Newsletter from "@modules/home/components/newsletter"
+import Benefits from "@modules/home/components/benefits"
+import Instagram from "@modules/home/components/instagram"
+import About from "@modules/home/components/about"
+import DataInfoPanel from "@modules/common/components/data-info-panel"
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
-  description:
-    "A performant frontend ecommerce starter template with Next.js 14 and Medusa.",
+  title: "Emerald Stone - Ekskluzywna biżuteria z kamieni naturalnych",
+  description: "Odkryj wyjątkową kolekcję biżuterii z naturalnych kamieni szlachetnych. Szmaragdy, rubiny, szafiry - każdy element to unikalne dzieło sztuki.",
 }
 
 export default async function Home({
@@ -16,21 +22,40 @@ export default async function Home({
 }: {
   params: { countryCode: string }
 }) {
-  const collections = await getCollectionsWithProducts(countryCode)
-  const region = await getRegion(countryCode)
-
-  if (!collections || !region) {
-    return null
-  }
-
+  // Logowanie danych aplikacji
+  await logAllData(countryCode)
+  
   return (
     <>
+      {/* Hero Section */}
       <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
+      
+      {/* Benefity */}
+      <Benefits />
+      
+      {/* Produkty wyróżnione */}
+      <FeaturedProducts />
+      
+      {/* Kolekcje */}
+      <Collections />
+      
+      {/* O nas - krótka sekcja */}
+      <About />
+      
+      {/* Przewodnik po kamieniach */}
+      <StoneGuide />
+      
+      {/* Opinie klientów */}
+      <Testimonials />
+      
+      {/* Instagram feed */}
+      <Instagram />
+      
+      {/* Newsletter */}
+      <Newsletter />
+      
+      {/* Panel informacji o danych */}
+      <DataInfoPanel />
     </>
   )
 }

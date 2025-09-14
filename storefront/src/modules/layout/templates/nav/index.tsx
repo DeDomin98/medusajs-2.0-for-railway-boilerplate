@@ -1,70 +1,90 @@
-import { Suspense } from "react"
+"use client"
 
-import { listRegions } from "@lib/data/regions"
-import { StoreRegion } from "@medusajs/types"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import CartButton from "@modules/layout/components/cart-button"
-import SideMenu from "@modules/layout/components/side-menu"
+import { useState } from 'react'
+import Link from 'next/link'
+import { ShoppingBag, Search, Menu, X, Sparkles } from 'lucide-react'
 
-export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+const Nav = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
-              <SideMenu regions={regions} />
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="relative">
+              <div className="w-10 h-10 bg-emerald-gradient rounded-full flex items-center justify-center shadow-lg group-hover:shadow-emerald-500/25 transition-shadow">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div className="absolute -inset-1 bg-emerald-gradient rounded-full blur opacity-25 group-hover:opacity-40 transition-opacity"></div>
             </div>
+            <div className="flex flex-col">
+              <span className="font-display text-xl font-bold text-emerald-600">
+                Emerald Stone
+              </span>
+              <span className="text-xs text-stone-500 -mt-1">Natural Jewelry</span>
+            </div>
+          </Link>
+
+          {/* Menu główne - desktop */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/collections" className="text-stone-700 hover:text-emerald-600 font-medium transition-colors">
+              Kolekcje
+            </Link>
+            <Link href="/stones" className="text-stone-700 hover:text-emerald-600 font-medium transition-colors">
+              Kamienie
+            </Link>
+            <Link href="/about" className="text-stone-700 hover:text-emerald-600 font-medium transition-colors">
+              O nas
+            </Link>
+            <Link href="/contact" className="text-stone-700 hover:text-emerald-600 font-medium transition-colors">
+              Kontakt
+            </Link>
           </div>
 
-          <div className="flex items-center h-full">
-            <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
-              data-testid="nav-store-link"
+          {/* Ikony akcji */}
+          <div className="flex items-center space-x-4">
+            <button className="text-stone-600 hover:text-emerald-600 transition-colors">
+              <Search className="w-5 h-5" />
+            </button>
+            <Link href="/cart" className="relative text-stone-600 hover:text-emerald-600 transition-colors">
+              <ShoppingBag className="w-5 h-5" />
+              <span className="absolute -top-2 -right-2 w-4 h-4 bg-gold text-white text-xs rounded-full flex items-center justify-center">
+                0
+              </span>
+            </Link>
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden text-stone-600"
             >
-              Medusa Store
-            </LocalizedClientLink>
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="hidden small:flex items-center gap-x-6 h-full">
-              {process.env.NEXT_PUBLIC_FEATURE_SEARCH_ENABLED && (
-                <LocalizedClientLink
-                  className="hover:text-ui-fg-base"
-                  href="/search"
-                  scroll={false}
-                  data-testid="nav-search-link"
-                >
-                  Search
-                </LocalizedClientLink>
-              )}
-              <LocalizedClientLink
-                className="hover:text-ui-fg-base"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
-            <Suspense
-              fallback={
-                <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
-                  href="/cart"
-                  data-testid="nav-cart-link"
-                >
-                  Cart (0)
-                </LocalizedClientLink>
-              }
-            >
-              <CartButton />
-            </Suspense>
+      {/* Menu mobilne */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white border-t border-stone-200">
+          <div className="px-4 py-4 space-y-3">
+            <Link href="/collections" className="block text-stone-700 hover:text-emerald-600 font-medium">
+              Kolekcjenpm install lucide-react
+            </Link>
+            <Link href="/stones" className="block text-stone-700 hover:text-emerald-600 font-medium">
+              Kamienie
+            </Link>
+            <Link href="/about" className="block text-stone-700 hover:text-emerald-600 font-medium">
+              O nas
+            </Link>
+            <Link href="/contact" className="block text-stone-700 hover:text-emerald-600 font-medium">
+              Kontakt
+            </Link>
           </div>
-        </nav>
-      </header>
-    </div>
+        </div>
+      )}
+    </nav>
   )
 }
+
+export default Nav

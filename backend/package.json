@@ -15,6 +15,8 @@
   "scripts": {
     "build": "medusa build && node src/scripts/postBuild.js",
     "seed": "medusa exec ./src/scripts/seed.ts",
+    "seed:jewelry": "medusa exec ./src/scripts/run-seed.ts",
+    "seed:products": "tsx src/scripts/run-seed.ts",
     "ib": "init-backend",
     "start": "init-backend && cd .medusa/server && medusa start --verbose",
     "dev": "medusa develop",

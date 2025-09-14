@@ -1,155 +1,91 @@
-import { getCategoriesList } from "@lib/data/categories"
-import { getCollectionsList } from "@lib/data/collections"
-import { Text, clx } from "@medusajs/ui"
+import Link from 'next/link'
+import { Sparkles, Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react'
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import MedusaCTA from "@modules/layout/components/medusa-cta"
-
-export default async function Footer() {
-  const { collections } = await getCollectionsList(0, 6)
-  const { product_categories } = await getCategoriesList(0, 6)
-
+const Footer = () => {
   return (
-    <footer className="border-t border-ui-border-base w-full">
-      <div className="content-container flex flex-col w-full">
-        <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-40">
-          <div>
-            <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
-            >
-              Medusa Store
-            </LocalizedClientLink>
-          </div>
-          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
-            {product_categories && product_categories?.length > 0 && (
-              <div className="flex flex-col gap-y-2">
-                <span className="txt-small-plus txt-ui-fg-base">
-                  Categories
-                </span>
-                <ul
-                  className="grid grid-cols-1 gap-2"
-                  data-testid="footer-categories"
-                >
-                  {product_categories?.slice(0, 6).map((c) => {
-                    if (c.parent_category) {
-                      return
-                    }
-
-                    const children =
-                      c.category_children?.map((child) => ({
-                        name: child.name,
-                        handle: child.handle,
-                        id: child.id,
-                      })) || null
-
-                    return (
-                      <li
-                        className="flex flex-col gap-2 text-ui-fg-subtle txt-small"
-                        key={c.id}
-                      >
-                        <LocalizedClientLink
-                          className={clx(
-                            "hover:text-ui-fg-base",
-                            children && "txt-small-plus"
-                          )}
-                          href={`/categories/${c.handle}`}
-                          data-testid="category-link"
-                        >
-                          {c.name}
-                        </LocalizedClientLink>
-                        {children && (
-                          <ul className="grid grid-cols-1 ml-3 gap-2">
-                            {children &&
-                              children.map((child) => (
-                                <li key={child.id}>
-                                  <LocalizedClientLink
-                                    className="hover:text-ui-fg-base"
-                                    href={`/categories/${child.handle}`}
-                                    data-testid="category-link"
-                                  >
-                                    {child.name}
-                                  </LocalizedClientLink>
-                                </li>
-                              ))}
-                          </ul>
-                        )}
-                      </li>
-                    )
-                  })}
-                </ul>
+    <footer className="bg-gradient-to-b from-stone-50 to-stone-100 border-t border-stone-200">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Logo i opis */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-emerald-gradient rounded-full flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
-            )}
-            {collections && collections.length > 0 && (
-              <div className="flex flex-col gap-y-2">
-                <span className="txt-small-plus txt-ui-fg-base">
-                  Collections
-                </span>
-                <ul
-                  className={clx(
-                    "grid grid-cols-1 gap-2 text-ui-fg-subtle txt-small",
-                    {
-                      "grid-cols-2": (collections?.length || 0) > 3,
-                    }
-                  )}
-                >
-                  {collections?.slice(0, 6).map((c) => (
-                    <li key={c.id}>
-                      <LocalizedClientLink
-                        className="hover:text-ui-fg-base"
-                        href={`/collections/${c.handle}`}
-                      >
-                        {c.title}
-                      </LocalizedClientLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Medusa</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
-                <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
-                  >
-                    GitHub
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
-                  >
-                    Documentation
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-ui-fg-base"
-                  >
-                    Source code
-                  </a>
-                </li>
-              </ul>
+              <span className="font-display text-xl font-bold text-emerald-600">
+                Emerald Stone
+              </span>
+            </div>
+            <p className="text-sm text-stone-600">
+              Ekskluzywna biżuteria z kamieni naturalnych. 
+              Każdy element to unikalne dzieło sztuki.
+            </p>
+            <div className="flex space-x-3">
+              <a href="#" className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                <Instagram className="w-4 h-4 text-emerald-600" />
+              </a>
+              <a href="#" className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors">
+                <Facebook className="w-4 h-4 text-emerald-600" />
+              </a>
             </div>
           </div>
+
+          {/* Kolekcje */}
+          <div>
+            <h4 className="font-medium text-stone-800 mb-4">Kolekcje</h4>
+            <ul className="space-y-2">
+              <li><Link href="/collections/necklaces" className="text-sm text-stone-600 hover:text-emerald-600">Naszyjniki</Link></li>
+              <li><Link href="/collections/bracelets" className="text-sm text-stone-600 hover:text-emerald-600">Bransoletki</Link></li>
+              <li><Link href="/collections/earrings" className="text-sm text-stone-600 hover:text-emerald-600">Kolczyki</Link></li>
+              <li><Link href="/collections/rings" className="text-sm text-stone-600 hover:text-emerald-600">Pierścionki</Link></li>
+            </ul>
+          </div>
+
+          {/* Informacje */}
+          <div>
+            <h4 className="font-medium text-stone-800 mb-4">Informacje</h4>
+            <ul className="space-y-2">
+              <li><Link href="/about" className="text-sm text-stone-600 hover:text-emerald-600">O nas</Link></li>
+              <li><Link href="/delivery" className="text-sm text-stone-600 hover:text-emerald-600">Dostawa</Link></li>
+              <li><Link href="/returns" className="text-sm text-stone-600 hover:text-emerald-600">Zwroty</Link></li>
+              <li><Link href="/care" className="text-sm text-stone-600 hover:text-emerald-600">Pielęgnacja biżuterii</Link></li>
+            </ul>
+          </div>
+
+          {/* Kontakt */}
+          <div>
+            <h4 className="font-medium text-stone-800 mb-4">Kontakt</h4>
+            <ul className="space-y-3">
+              <li className="flex items-start space-x-2">
+                <MapPin className="w-4 h-4 text-emerald-600 mt-0.5" />
+                <span className="text-sm text-stone-600">ul. Zielona 15<br/>Zabrze, 41-800</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <Phone className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm text-stone-600">+48 123 456 789</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <Mail className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm text-stone-600">kontakt@emeraldstone.pl</span>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="flex w-full mb-16 justify-between text-ui-fg-muted">
-          <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Medusa Store. All rights reserved.
-          </Text>
-          <MedusaCTA />
+
+        <div className="mt-8 pt-8 border-t border-stone-300">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm text-stone-500">
+              © 2025 Emerald Stone. Wszystkie prawa zastrzeżone.
+            </p>
+            <div className="flex space-x-4 mt-4 md:mt-0">
+              <Link href="/privacy" className="text-sm text-stone-500 hover:text-emerald-600">Polityka prywatności</Link>
+              <Link href="/terms" className="text-sm text-stone-500 hover:text-emerald-600">Regulamin</Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
   )
 }
+
+export default Footer
