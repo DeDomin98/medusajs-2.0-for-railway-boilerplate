@@ -1,91 +1,80 @@
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { Region } from "@medusajs/medusa"
+import ProductRail from "@modules/home/components/featured-products/product-rail"
+import { ProductCollectionWithPreviews } from "types/global"
+import { getCollectionsList } from "@lib/data/collections"
 
-const featuredProducts = [
-  {
-    id: "1",
-    name: "Naszyjnik z szmaragdem",
-    price: "2,499 zł",
-    image: "/images/products/emerald-necklace.jpg",
-    href: "/products/emerald-necklace"
-  },
-  {
-    id: "2", 
-    name: "Bransoletka z rubinem",
-    price: "1,899 zł",
-    image: "/images/products/ruby-bracelet.jpg",
-    href: "/products/ruby-bracelet"
-  },
-  {
-    id: "3",
-    name: "Kolczyki z szafirem",
-    price: "1,299 zł", 
-    image: "/images/products/sapphire-earrings.jpg",
-    href: "/products/sapphire-earrings"
-  },
-  {
-    id: "4",
-    name: "Pierścionek z diamentem",
-    price: "3,999 zł",
-    image: "/images/products/diamond-ring.jpg", 
-    href: "/products/diamond-ring"
+
+export default async function FeaturedProducts({
+  countryCode,
+}: {
+  countryCode: string
+}) {
+  const { collections } = await getCollectionsList(0, 3)
+  const region = await getRegion(countryCode)
+
+  if (!collections || !region) {
+    return null
   }
-]
 
-export default function FeaturedProducts() {
   return (
-    <section className="py-20 bg-white">
+    <div className="py-20 bg-white">
       <div className="container mx-auto px-4">
+        {/* Nagłówek sekcji */}
         <div className="text-center mb-12">
-          <h2 className="font-display text-4xl font-bold text-stone-800 mb-4">
-            Produkty wyróżnione
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900 mb-4">
+            Wyróżnione produkty
           </h2>
-          <p className="text-stone-600 max-w-2xl mx-auto">
-            Odkryj nasze najpiękniejsze dzieła sztuki jubilerskiej, 
-            stworzone z najwyższej jakości kamieni naturalnych.
+          <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+            Odkryj nasze najpiękniejsze kreacje - biżuteria Hardé łączy w sobie 
+            elegancję i naturalną energię kamieni szlachetnych
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <Link 
-              key={product.id}
-              href={product.href}
-              className="group"
-            >
-              <div className="relative h-80 rounded-2xl overflow-hidden bg-stone-100">
-                {/* Placeholder image */}
-                <div className="absolute inset-0 bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
-                  <span className="text-stone-500 text-sm">Zdjęcie produktu</span>
-                </div>
-                
-                {/* Dark overlay on hover */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
-                
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-                  <h3 className="text-white font-display text-lg font-semibold mb-1">
-                    {product.name}
-                  </h3>
-                  <p className="text-white/90 text-sm font-medium">
-                    {product.price}
-                  </p>
-                </div>
-              </div>
-            </Link>
+        {/* Lista kolekcji */}
+        <ul className="flex flex-col gap-x-6 gap-y-16">
+          {collections.map((collection) => (
+            <li key={collection.id}>
+              <ProductRail collection={collection} region={region} />
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <div className="text-center mt-10">
-          <Link 
-            href="/products"
-            className="inline-flex items-center justify-center px-8 py-3 border-2 border-emerald-600 text-emerald-600 font-medium rounded-lg hover:bg-emerald-50 transition-colors"
+        {/* CTA do sklepu */}
+        <div className="text-center mt-16">
+          <LocalizedClientLink 
+            href="/store"
+            className="inline-flex items-center justify-center px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-all hover:shadow-xl hover:shadow-emerald-600/20 group"
           >
             Zobacz wszystkie produkty
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Link>
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </LocalizedClientLink>
         </div>
       </div>
-    </section>
+    </div>
   )
+}
+
+async function getRegion(countryCode: string): Promise<Region | null> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/regions`,
+      {
+        headers: {
+          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY!,
+        },
+        next: {
+          revalidate: 900,
+        },
+      }
+    )
+
+    const { regions } = await response.json()
+    
+    return regions?.find((r: Region) => 
+      r.countries?.some(c => c.iso_2 === countryCode.toUpperCase())
+    ) || regions?.[0] || null
+  } catch (error) {
+    console.error("Error fetching region:", error)
+    return null
+  }
 }

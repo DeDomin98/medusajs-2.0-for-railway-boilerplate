@@ -1,25 +1,31 @@
 import { Text } from "@medusajs/ui"
+import { ProductPreviewType } from "types/global"
+import { retrievePricedProductById } from "@lib/data/products"
 import { getProductPrice } from "@lib/util/get-product-price"
-import { HttpTypes } from "@medusajs/types"
+import { Region } from "@medusajs/medusa"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
-import { getProductsById } from "@lib/data/products"
-import { Heart, ShoppingBag, Sparkles } from 'lucide-react'
+import { Heart, ShoppingBag, Sparkles, Award } from 'lucide-react'
 
 export default async function ProductPreview({
-  product,
+  productPreview,
   isFeatured,
   region,
 }: {
-  product: HttpTypes.StoreProduct
+  productPreview: ProductPreviewType
   isFeatured?: boolean
-  region: HttpTypes.StoreRegion
+  region: Region
 }) {
-  const [pricedProduct] = await getProductsById({
-    ids: [product.id!],
+  // Sprawdź czy productPreview istnieje
+  if (!productPreview?.id) {
+    return null
+  }
+
+  const pricedProduct = await retrievePricedProductById({
+    id: productPreview.id,
     regionId: region.id,
-  })
+  }).then((product) => product)
 
   if (!pricedProduct) {
     return null
@@ -27,81 +33,97 @@ export default async function ProductPreview({
 
   const { cheapestPrice } = getProductPrice({
     product: pricedProduct,
+    region,
   })
 
-  // Sprawdź metadata dla typu kamienia
-  const stoneType = product.metadata?.stone_type || "Kamień naturalny"
-  const isNew = product.created_at ? new Date(product.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) : false // Nowy jeśli dodany w ciągu 30 dni
+  // Metadata z bezpiecznym dostępem
+  const stoneType = productPreview.metadata?.stone_type as string || ""
+  const isNew = productPreview.created_at ? 
+    new Date(productPreview.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) : 
+    false
+  const isBestseller = productPreview.tags?.some(tag => tag.value === "bestseller") || false
+  const isPremium = productPreview.tags?.some(tag => tag.value === "premium") || false
 
   return (
     <LocalizedClientLink
-      href={`/products/${product.handle}`}
+      href={`/products/${productPreview.handle}`}
       className="group"
     >
       <div className="relative">
-        {/* Thumbnail z efektami */}
-        <div className="relative overflow-hidden rounded-xl bg-stone-100">
+        {/* Thumbnail */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-stone-100 to-stone-50">
           <Thumbnail
-            thumbnail={product.thumbnail}
-            images={product.images}
+            thumbnail={productPreview.thumbnail}
             size="square"
             isFeatured={isFeatured}
-            className="group-hover:scale-105 transition-transform duration-300"
+            className="group-hover:scale-110 transition-transform duration-500"
           />
           
-          {/* Overlay gradient na hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          {/* Overlay na hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
           
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {isNew && (
-              <span className="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                Nowość
+              <span className="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
+                NOWOŚĆ
               </span>
             )}
-            {isFeatured && (
-              <span className="bg-gold text-white text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1">
+            {isBestseller && (
+              <span className="bg-gold text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg flex items-center gap-1">
+                <Award className="w-3 h-3" />
+                BESTSELLER
+              </span>
+            )}
+            {isPremium && (
+              <span className="bg-gradient-to-r from-stone-800 to-stone-600 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
-                Premium
+                PREMIUM
               </span>
             )}
           </div>
           
           {/* Quick actions */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2 translate-x-12 group-hover:translate-x-0 transition-transform">
+          <div className="absolute bottom-4 right-4 flex gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-300">
             <button 
               onClick={(e) => {
                 e.preventDefault()
                 // Dodaj do wishlist
               }}
-              className="w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+              className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all shadow-lg"
             >
-              <Heart className="w-4 h-4 text-stone-600 hover:text-red-500" />
+              <Heart className="w-5 h-5 text-stone-600 hover:text-red-500 transition-colors" />
             </button>
             <button 
               onClick={(e) => {
                 e.preventDefault()
                 // Quick add to cart
               }}
-              className="w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+              className="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center hover:bg-emerald-700 hover:scale-110 transition-all shadow-lg"
             >
-              <ShoppingBag className="w-4 h-4 text-stone-600 hover:text-emerald-600" />
+              <ShoppingBag className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Informacje o produkcie */}
         <div className="mt-4 space-y-2">
-          <div>
-            <Text className="text-stone-500 text-xs uppercase tracking-wide font-medium">
-              {String(stoneType)}
+          {stoneType && (
+            <Text className="text-xs uppercase tracking-wider text-emerald-600 font-semibold">
+              {stoneType}
             </Text>
-            <h3 className="font-medium text-stone-800 group-hover:text-emerald-600 transition-colors line-clamp-1">
-              {product.title}
-            </h3>
+          )}
+          <h3 className="font-medium text-stone-800 group-hover:text-emerald-600 transition-colors line-clamp-1">
+            {productPreview.title || "Untitled Product"}
+          </h3>
+          <div className="flex items-center justify-between">
+            <PreviewPrice price={cheapestPrice} />
+            {productPreview.variants && productPreview.variants.length > 1 && (
+              <span className="text-xs text-stone-500">
+                {productPreview.variants.length} warianty
+              </span>
+            )}
           </div>
-
-          {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
         </div>
       </div>
     </LocalizedClientLink>

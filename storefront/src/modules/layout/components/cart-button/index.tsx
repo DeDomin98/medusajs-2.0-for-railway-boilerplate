@@ -1,24 +1,17 @@
-import { notFound } from "next/navigation"
-import CartDropdown from "../cart-dropdown"
-import { enrichLineItems, retrieveCart } from "@lib/data/cart"
+"use client"
 
-const fetchCart = async () => {
-  const cart = await retrieveCart()
+import { ShoppingBag } from 'lucide-react'
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-  if (!cart) {
-    return null
-  }
-
-  if (cart?.items?.length) {
-    const enrichedItems = await enrichLineItems(cart.items, cart.region_id!)
-    cart.items = enrichedItems
-  }
-
-  return cart
-}
-
-export default async function CartButton() {
-  const cart = await fetchCart()
-
-  return <CartDropdown cart={cart} />
+export default function CartButton() {
+  // Prosta wersja bez dynamicznego licznika
+  return (
+    <LocalizedClientLink 
+      href="/cart"
+      className="relative text-stone-600 hover:text-emerald-600 transition-colors group"
+    >
+      <ShoppingBag className="w-5 h-5" />
+      {/* Licznik będzie dodany później */}
+    </LocalizedClientLink>
+  )
 }

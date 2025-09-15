@@ -1,59 +1,84 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --emerald-600: 0 128 80;
+    --gold: 212 175 55;
+  }
+
   body {
-    @apply font-body text-stone-700 bg-stone-50;
+    @apply font-body text-stone-700 bg-white antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;
   }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer components {
-  /* Przyciski */
-  .btn-primary {
-    @apply px-6 py-3 bg-emerald-gradient text-white font-medium rounded-lg 
-           hover:shadow-lg hover:shadow-emerald-500/25 transition-all;
-  }
-  
-  .btn-secondary {
-    @apply px-6 py-3 border-2 border-emerald-600 text-emerald-600 font-medium 
-           rounded-lg hover:bg-emerald-50 transition-colors;
-  }
-  
-  /* Karty */
-  .card {
-    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow;
-  }
-  
   /* Animacje */
-  .shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 2s linear infinite;
+  @keyframes shimmer {
+    0% { transform: translateX(-200%); }
+    100% { transform: translateX(200%); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+
+  /* Przyciski Hardé */
+  .btn-harde-primary {
+    @apply px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-all hover:shadow-xl hover:shadow-emerald-600/20;
+  }
+  
+  .btn-harde-secondary {
+    @apply px-8 py-4 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-semibold rounded-full transition-all;
+  }
+
+  /* Karty produktów */
+  .product-card {
+    @apply bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300;
+  }
+
+  /* Badge Hardé */
+  .badge-harde {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
   }
 }
 
 @layer utilities {
   /* Gradient text */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-emerald-gradient;
+  .text-gradient-harde {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-emerald-500;
   }
-  
+
   /* Glass effect */
-  .glass {
-    @apply bg-white/80 backdrop-blur-md;
+  .glass-harde {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20;
   }
 }
 
-/* Custom scrollbar */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
@@ -61,9 +86,14 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-emerald-400 rounded-full;
+  @apply bg-emerald-500 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-emerald-500;
+  @apply bg-emerald-600;
+}
+
+/* Selection color */
+::selection {
+  @apply bg-emerald-100 text-emerald-900;
 }
