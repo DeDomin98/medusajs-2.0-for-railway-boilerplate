@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import { getCollectionsList, getProductsList, getRegion } from "@lib/data"
-import ProductGrid from "@modules/products/components/product-grid/page
+import ProductGrid from "@modules/products/components/product-grid/page"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Gem, Filter, ChevronDown } from "lucide-react"
 
