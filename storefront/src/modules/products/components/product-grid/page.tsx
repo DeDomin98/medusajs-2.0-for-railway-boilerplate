@@ -1,6 +1,6 @@
 import { Product } from "@medusajs/medusa"
 import ProductPreview from "../product-preview"
-import { getRegion } from "@lib/data"
+import { getRegion } from "@lib/data/regions"
 
 export default async function ProductGrid({
   products,
